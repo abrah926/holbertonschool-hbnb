@@ -28,5 +28,8 @@ class HBnBFacade:
         if not user:
             return None
         for key, value in updated_data.items():
-            setattr(user, key, value)
+            if hasattr(user, key):
+                setattr(user, key, value)
+            else:
+                return {'error': f'Invalid attribute: {key}'}, 400
         return user
