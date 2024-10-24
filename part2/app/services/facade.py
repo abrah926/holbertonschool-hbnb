@@ -3,6 +3,7 @@
 
 from app.persistence.repository import InMemoryRepository
 from app.models.user import User
+from app.models.amenity import Amenity
 
 
 class HBnBFacade:
@@ -33,3 +34,28 @@ class HBnBFacade:
             else:
                 return {'error': f'Invalid attribute: {key}'}, 400
         return user
+
+    def create_amenity(self, amenity_data):
+        if not amenity_data.get('name'):
+            return {'error': 'Amenity name is required'}, 400
+        amenity = Amenity(**amenity_data)
+        self.amenity_repo.add(amenity)
+        return amenity
+
+    def get_amenity(self, amenity_id):
+        amenity = self.amenity_repo.get(amenity_id)
+        if not amenity:
+            return{'error': 'Amenity not found'}, 404
+        return amenity
+
+    def get_all_amenities(self):
+        return self.amenity_repo.get_all()
+
+    def update_amenity(self, amenity_id, amenity_data):
+        amenity = self.get_amenity(amenity_id)
+        if isinstance(amenity, dict) and amenity.get('error'):
+            return amenity
+        if not amenity_data.get('name'):
+            return {'error': 'Amenity name is required'}, 400
+        amenity.name = amenity_data['name']
+        return amenity
