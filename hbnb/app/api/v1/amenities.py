@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-
+from flask import request
 from flask_restx import Namespace, Resource, fields
 from app.services.facade import HBnBFacade
 
@@ -18,11 +18,19 @@ class AmenityList(Resource):
     @api.response(201, 'Amenity successfully created')
     @api.response(400, 'Invalid input data')
     def post(self):
-        pass
+        '''Register Amenity'''
+        data = request.get_json()
+        try:
+            amenity = facade.create_amenity(data)
+            return amenity, 201
+        except ValueError as e:
+            return {'message': str(e)}, 400
 
     @api.response(200, 'List of amenities retrieved successfully')
     def get(self):
-        pass
+        '''Retrieves a list of all Amenities'''
+        amenities = facade.get_all_amenities()
+        return amenities, 200
 
 
 @api.route('/<string:amenity_id>')

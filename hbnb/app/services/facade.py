@@ -9,6 +9,7 @@ from app.models.amenity import Amenity
 class HBnBFacade:
     def __init__(self):
         self.user_repo = InMemoryRepository()
+        self.amenity_repo = InMemoryRepository()
 
     def create_user(self, user_data):
         user = User(**user_data)
@@ -45,7 +46,7 @@ class HBnBFacade:
     def get_amenity(self, amenity_id):
         amenity = self.amenity_repo.get(amenity_id)
         if not amenity:
-            return{'error': 'Amenity not found'}, 404
+            return {'error': 'Amenity not found'}, 404
         return amenity
 
     def get_all_amenities(self):
