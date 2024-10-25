@@ -52,4 +52,4 @@ class Place(BaseModel):
 
     @classmethod
     def get_all(cls):
-        return cls.storage.all(cls)
+        return cls.instances

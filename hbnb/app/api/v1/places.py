@@ -1,5 +1,5 @@
 from flask_restx import Namespace, Resource, fields
-from app.services import facade
+from app.services import HBnBFacade
 
 api = Namespace('places', description='Place operations')
 
@@ -45,7 +45,7 @@ class PlaceList(Resource):
     def get(self):
         """Retrieve a list of all places"""
         places = facade.get_all_places()
-        return [place.to_dict() for place in places], 200
+        return places, 200
 
 
 @api.route('/<place_id>')

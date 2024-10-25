@@ -107,7 +107,7 @@ class HBnBFacade:
     def get_all_places(self):
         '''Retrieves all places'''
         places = Place.get_all()
-        return places
+        return [place.to_dict() for place in places]
 
     def update_place(self, place_id, place_data):
         place = self.get_place(place_id)
