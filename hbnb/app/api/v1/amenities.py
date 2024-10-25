@@ -22,7 +22,9 @@ class AmenityList(Resource):
         data = request.get_json()
         try:
             amenity = facade.create_amenity(data)
-            return amenity.to_dict(), 201
+            if isinstance(amenity, dict) and 'error' in amenity:
+                return amenity
+            return amenity, 201
         except ValueError as e:
             return {'message': str(e)}, 400
 
@@ -42,7 +44,7 @@ class AmenityResource(Resource):
         amenity = facade.get_amenity(amenity_id)
         if not amenity:
             return {'message': 'Amenity not found'}, 404
-        return amenity, 200
+        return amenity.to_dict(), 200
 
     @api.expect(amenity_model)
     @api.response(200, 'Amenity updated successfully')
@@ -54,4 +56,4 @@ class AmenityResource(Resource):
         result = facade.update_amenity(amenity_id, data)
         if isinstance(result, dict) and 'error' in result:
             return result
-        return result, 200
+        return result.to_dict(), 200

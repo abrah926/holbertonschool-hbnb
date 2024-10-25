@@ -41,16 +41,16 @@ class HBnBFacade:
             return {'error': 'Amenity name is required'}, 400
         amenity = Amenity(**amenity_data)
         self.amenity_repo.add(amenity)
-        return amenity
+        return amenity.to_dict()
 
     def get_amenity(self, amenity_id):
         amenity = self.amenity_repo.get(amenity_id)
         if not amenity:
             return {'error': 'Amenity not found'}, 404
-        return amenity
+        return amenity.to_dict()
 
     def get_all_amenities(self):
-        return self.amenity_repo.get_all()
+        return [amenity.to_dict() for amenity in self.amenity_repo.get_all()]
 
     def update_amenity(self, amenity_id, amenity_data):
         amenity = self.get_amenity(amenity_id)
@@ -59,4 +59,4 @@ class HBnBFacade:
         if not amenity_data.get('name'):
             return {'error': 'Amenity name is required'}, 400
         amenity.name = amenity_data['name']
-        return amenity
+        return amenity.to_dict()
