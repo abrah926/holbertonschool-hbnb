@@ -46,8 +46,9 @@ class HBnBFacade:
     def get_amenity(self, amenity_id):
         amenity = self.amenity_repo.get(amenity_id)
         if not amenity:
-            return {'error': 'Amenity not found'}, 404
-        return amenity.to_dict()
+
+            raise ValueError('Amenity not found')
+        return amenity
 
     def get_all_amenities(self):
         return [amenity.to_dict() for amenity in self.amenity_repo.get_all()]
@@ -58,5 +59,22 @@ class HBnBFacade:
             return amenity
         if not amenity_data.get('name'):
             return {'error': 'Amenity name is required'}, 400
+
         amenity.name = amenity_data['name']
-        return amenity.to_dict()
+        return amenity
+
+    def create_place(self, place_data):
+        # Placeholder for logic to create a place, including validation for price, latitude, and longitude
+        pass
+
+    def get_place(self, place_id):
+        # Placeholder for logic to retrieve a place by ID, including associated owner and amenities
+        pass
+
+    def get_all_places(self):
+        # Placeholder for logic to retrieve all places
+        pass
+
+    def update_place(self, place_id, place_data):
+        # Placeholder for logic to update a place
+        pass

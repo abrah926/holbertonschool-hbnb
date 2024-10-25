@@ -10,10 +10,7 @@ class Amenity(BaseModel):
         self.name = name
 
     def to_dict(self):
-        """Convert the Amenity instance to a dictionary."""
         return {
             'id': self.id,
-            'name': self.name,
-            'created_at': self.created_at.isoformat(),
-            'updated_at': self.updated_at.isoformat(),
+            'name': self.name
         }
