@@ -49,3 +49,7 @@ class Place(BaseModel):
     def longitude(self, value):
         if not -180 <= value <= 180:
             raise ValueError('Longitude must be between -180 and 180')
+
+    @classmethod
+    def get_all(cls):
+        return cls.storage.all(cls)

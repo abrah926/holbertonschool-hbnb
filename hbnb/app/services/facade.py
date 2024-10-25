@@ -105,9 +105,27 @@ class HBnBFacade:
             raise ValueError('place not found')
 
     def get_all_places(self):
-        # Placeholder for logic to retrieve all places
-        pass
+        '''Retrieves all places'''
+        places = Place.get_all()
+        return places
 
     def update_place(self, place_id, place_data):
-        # Placeholder for logic to update a place
-        pass
+        place = self.get_place(place_id)
+        if not place:
+            raise ValueError('Place not found')
+
+        for key, value in place_data.items():
+            if hasattr(place, key):
+                if key == 'price':
+                    if value < 0:
+                        raise ValueError('Price must be non-negative')
+                elif key == 'latitude':
+                    if not -90 <= value <= 90:
+                        raise ValueError('latitude must be between -90 and 90')
+                elif key == 'longitude':
+                    if not -180 <= 180:
+                        raise ValueError(
+                            'longitude must be between -180 and 180')
+                setattr(place, key, value)
+
+        return place
