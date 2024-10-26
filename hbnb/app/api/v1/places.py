@@ -1,5 +1,6 @@
 from flask_restx import Namespace, Resource, fields
-from app.services import HBnBFacade
+from app.services import facade
+from flask import jsonify
 
 api = Namespace('places', description='Place operations')
 
@@ -35,6 +36,7 @@ class PlaceList(Resource):
     def post(self):
         """Register a new place"""
         data = api.payload
+
         try:
             place = facade.create_place(data)
             return place.to_dict(), 201
@@ -44,8 +46,9 @@ class PlaceList(Resource):
     @api.response(200, 'List of places retrieved successfully')
     def get(self):
         """Retrieve a list of all places"""
+
         places = facade.get_all_places()
-        return places, 200
+        return {'places': [place.to_dict() for place in places]}, 200
 
 
 @api.route('/<place_id>')
@@ -67,6 +70,7 @@ class PlaceResource(Resource):
     def put(self, place_id):
         """Update a place's information"""
         data = api.payload
+
         try:
             place = facade.update_place(place_id, data)
             return place.to_dict(), 200

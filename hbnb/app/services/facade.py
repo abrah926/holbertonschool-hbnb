@@ -11,6 +11,7 @@ class HBnBFacade:
     def __init__(self):
         self.user_repo = InMemoryRepository()
         self.amenity_repo = InMemoryRepository()
+        self.place_repo = InMemoryRepository()
 
     def create_user(self, user_data):
         user = User(**user_data)
@@ -67,14 +68,15 @@ class HBnBFacade:
     def create_place(self, place_data):
         try:
             title = place_data.get('tittle')
+            description = data.get('description')
             price = place_data.get('price')
             latitude = place_data.get('latitude')
             longitude = place_data.get('longitude')
             owner_id = place_data.get('owner_id')
-            amenities = place_data.get('amenities', [])
+            amenities_ids = place_data.get('amenities_ids', [])
 
-            if title is None or price is None or latitude is None or longitude is None or owner_id is None:
-                raise ValueError('Missing fields requiered')
+            if not all([title, description, price, latitude, longitude, owner_id]):
+                return {"error": "All fields are required"}, 400
 
             if price < 0:
                 raise ValueError('Price must be non-negative')
@@ -83,18 +85,27 @@ class HBnBFacade:
             if not -180 <= longitude <= 180:
                 raise ValueError("Longitude must be between -180 and 180")
 
-            place = Place(
-                title=title,
-                description=place_data.get('description', ''),
-                price=price,
-                latitude=latitude,
-                longitude=longitude,
-                owner_id=owner_id,
-                amenities=amenities
-            )
-            return place
-        except ValueError as e:
-            raise ValueError(str(e))
+            owner = User.get_by_id(owner_id)
+            if not owner:
+                return {"error": "Owner not found"}, 400
+
+            amenities = []
+            for amenity_id in amenity_ids:
+                amenity = Amenity.get_by_id(amenity_id)
+                if amenity:
+                    amenities.append(amenity)
+                else:
+                    return {"error": f"Amenity with ID {amenity_id} not found"}, 400
+
+            place = Place(title=title, description=description, price=price,
+                          latitude=latitude, longitude=longitude, owner=owner)
+
+            for amenity in amenities:
+                place.add_amenity(amenity)
+
+            place.save()
+
+            return {"message": "Place successfully created", "place": place.to_dict()}, 201
 
     def get_place(self, place_id):
         '''Retrieves a place by ID, including owner and amenity'''

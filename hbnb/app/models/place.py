@@ -5,6 +5,9 @@ from . import BaseModel
 
 
 class Place(BaseModel):
+
+    instances = []
+
     def __init__(self, title, description, price, latitude, longitude, owner):
         super().__init__()
         self.title = title
@@ -15,6 +18,8 @@ class Place(BaseModel):
         self.owner = owner
         self.reviews = []
         self.amenities = []
+
+        Place.instances.append(self)
 
     def add_review(self, review):
         self.reviews.append(review)
