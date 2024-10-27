@@ -54,3 +54,27 @@ class InMemoryRepository(Repository):
 
     def get_by_attribute(self, attr_name, attr_value):
         return next((obj for obj in self._storage.values() if getattr(obj, attr_name) == attr_value), None)
+
+
+class UserRepository(InMemoryRepository):
+    def __init__(self):
+        super().__init__()
+
+    def get_by_attribute(self, attr_name, attr_value):
+        return next((user for user in self._storage.values() if getattr(user, attr_name) == attr_value), None)
+
+
+class Place:
+    def __init__(self, id, name, description):
+        self.id = id
+        self.name = name
+        self.description = description
+
+    def update(self, data):
+        for key, value in data.items():
+            setattr(self, key, value)
+
+
+class PlaceRepository(InMemoryRepository):
+    def __init__(self):
+        super().__init__()

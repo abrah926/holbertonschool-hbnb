@@ -106,7 +106,7 @@ class HBnBFacade:
             place.add_amenity(amenity)
 
         self.place_repo.add(place)
-        return place, 201
+        return place.to_dict(), 201
 
     def get_place(self, place_id):
         place = self.place_repo.get(place_id)

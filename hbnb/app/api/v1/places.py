@@ -3,11 +3,13 @@ from app.services.facade import HBnBFacade
 from flask import jsonify
 from app.api.v1 import places_ns
 from flask import request
+import logging
+from app import app
 
 api = Namespace('places', description='Place operations')
 
-
-facade = HBnBFacade()
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 amenity_model = api.model('PlaceAmenity', {
     'id': fields.String(description='Amenity ID'),
@@ -29,15 +31,17 @@ place_model = api.model('Place', {
     'latitude': fields.Float(required=True, description='Latitude of the place'),
     'longitude': fields.Float(required=True, description='Longitude of the place'),
     'owner_id': fields.String(required=True, description='ID of the owner'),
-    'amenities': fields.List(fields.String, required=True, description="List of amenities ID's")
+    'amenities': fields.List(fields.String, required=False, description="List of amenities ID's")
 })
 
+facade = HBnBFacade()
 
-@places_ns.route('/')
+
+@api.route('/')
 class PlaceResource(Resource):
-    @places_ns.expect(place_model)
-    @places_ns.response(201, 'Place successfully created')
-    @places_ns.response(400, 'Invalid input data')
+    @api.expect(place_model)
+    @api.response(201, 'Place successfully created')
+    @api.response(400, 'Invalid input data')
     def post(self):
         place_data = request.get_json()
         try:
@@ -48,20 +52,18 @@ class PlaceResource(Resource):
         except ValueError as e:
             return {'message': str(e)}, 400
 
-    @places_ns.response(200, 'List of places retrieved successfully')
+    @api.response(200, 'List of places retrieved successfully')
     def get(self):
-        try:
-            places = facade.get_all_places()
-
-            return [place.to_dict() for place in places], 200
-        except Exception as e:
-            return {'error': str(e)}, 500
+        """Retrieve a list of all places"""
+        app.logger.debug('Received request for retrieving all places')
+        places = facade.get_all_places()
+        return places, 200
 
 
-@api.route('/<place_id>')
+@places_ns.route('/<place_id>')
 class PlaceResource(Resource):
-    @api.response(200, 'Place details retrieved successfully')
-    @api.response(404, 'Place not found')
+    @places_ns.response(200, 'Place details retrieved successfully')
+    @places_ns.response(404, 'Place not found')
     def get(self, place_id):
         """Get place details by ID"""
         try:
@@ -70,10 +72,10 @@ class PlaceResource(Resource):
         except ValueError:
             return {'message': 'Place not found'}, 404
 
-    @api.expect(place_model)
-    @api.response(200, 'Place updated successfully')
-    @api.response(404, 'Place not found')
-    @api.response(400, 'Invalid input data')
+    @places_ns.expect(place_model)
+    @places_ns.response(200, 'Place updated successfully')
+    @places_ns.response(404, 'Place not found')
+    @places_ns.response(400, 'Invalid input data')
     def put(self, place_id):
         """Update a place's information"""
         data = api.payload
