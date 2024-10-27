@@ -12,6 +12,3 @@ class User(BaseModel):
         self.email = email
         self.is_admin = is_admin
         self.places = []
-
-    def add_place(self, place):
-        self.places.append(place)

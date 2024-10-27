@@ -2,6 +2,8 @@
 
 
 from . import BaseModel
+from app.models.user import User
+from app.models.amenity import Amenity
 
 
 class Place(BaseModel):
@@ -19,42 +21,35 @@ class Place(BaseModel):
         self.reviews = []
         self.amenities = []
 
-        Place.instances.append(self)
+    def validate_price(self, price):
+        if price < 0:
+            raise ValueError("Price must be a non-negative value")
+        return price
+
+    def validate_latitude(self, latitude):
+        if not (-90 <= latitude <= 90):
+            raise ValueError("Latitude must be between -90 and 90")
+        return latitude
+
+    def validate_longitude(self, longitude):
+        if not (-180 <= longitude <= 180):
+            raise ValueError("Longitude must be between -180 and 180")
+        return longitude
+
+    def add_amenity(self, amenity):
+        """Add an amenity to the place."""
+        self.amenities.append(amenity)
+
+    def set_owner(self, owner):
+        """Set the owner of the place."""
+        if not isinstance(owner, User):
+            raise ValueError("Owner must be a valid User instance")
+        self.owner = owner
 
     def add_review(self, review):
+        """Add a review to the place."""
         self.reviews.append(review)
 
     def add_amenity(self, amenity):
+        """Add an amenity to the place."""
         self.amenities.append(amenity)
-
-    @property
-    def price(self):
-        return self._price
-
-    @price.setter
-    def price(self, value):
-        if value < 0:
-            raise ValueError('Price must be non-negative')
-        self.price = value
-
-    @property
-    def latitude(self):
-        return self._latitude
-
-    @latitude.setter
-    def latitude(self, value):
-        if not -90 <= value <= 90:
-            raise ValueError('Latitude must be between -90 and 90')
-
-    @property
-    def longitude(self):
-        return self._longitude
-
-    @longitude.setter
-    def longitude(self, value):
-        if not -180 <= value <= 180:
-            raise ValueError('Longitude must be between -180 and 180')
-
-    @classmethod
-    def get_all(cls):
-        return cls.instances
