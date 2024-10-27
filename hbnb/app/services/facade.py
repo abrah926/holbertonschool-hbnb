@@ -53,8 +53,8 @@ class HBnBFacade:
         if not owner:
             raise ValueError("Invalid owner ID")
 
-        amenities = [self.amenity_repo.get(aid)
-                     for aid in place_data['amenities']]
+        amenities = [self.amenity_repo.get(some_id)
+                     for some_id in place_data['amenity_ids']]
         if None in amenities:
             raise ValueError("Invalid amenity ID in amenities list")
 
