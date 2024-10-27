@@ -50,6 +50,7 @@ class HBnBFacade:
     def create_place(self, place_data):
 
         owner = self.user_repo.get(place_data['owner_id'])
+
         if not owner:
             raise ValueError("Invalid owner ID")
 
