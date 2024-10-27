@@ -1,8 +1,13 @@
 from flask_restx import Namespace, Resource, fields
-from app.services import facade
+from app.services.facade import HBnBFacade
 from flask import jsonify
+from app.api.v1 import places_ns
+from flask import request
 
 api = Namespace('places', description='Place operations')
+
+
+facade = HBnBFacade()
 
 amenity_model = api.model('PlaceAmenity', {
     'id': fields.String(description='Amenity ID'),
@@ -28,27 +33,29 @@ place_model = api.model('Place', {
 })
 
 
-@api.route('/')
-class PlaceList(Resource):
-    @api.expect(place_model)
-    @api.response(201, 'Place successfully created')
-    @api.response(400, 'Invalid input data')
+@places_ns.route('/')
+class PlaceResource(Resource):
+    @places_ns.expect(place_model)
+    @places_ns.response(201, 'Place successfully created')
+    @places_ns.response(400, 'Invalid input data')
     def post(self):
-        """Register a new place"""
-        data = api.payload
-
+        place_data = request.get_json()
         try:
-            place = facade.create_place(data)
-            return place.to_dict(), 201
+            result, status = facade.create_place(place_data)
+            if status == 201:
+                return result.to_dict(), status
+            return result, status
         except ValueError as e:
             return {'message': str(e)}, 400
 
-    @api.response(200, 'List of places retrieved successfully')
+    @places_ns.response(200, 'List of places retrieved successfully')
     def get(self):
-        """Retrieve a list of all places"""
+        try:
+            places = facade.get_all_places()
 
-        places = facade.get_all_places()
-        return {'places': [place.to_dict() for place in places]}, 200
+            return [place.to_dict() for place in places], 200
+        except Exception as e:
+            return {'error': str(e)}, 500
 
 
 @api.route('/<place_id>')

@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 
-
 from app.persistence.repository import InMemoryRepository
 from app.models.user import User
 from app.models.amenity import Amenity
@@ -48,7 +47,6 @@ class HBnBFacade:
     def get_amenity(self, amenity_id):
         amenity = self.amenity_repo.get(amenity_id)
         if not amenity:
-
             raise ValueError('Amenity not found')
         return amenity
 
@@ -61,82 +59,76 @@ class HBnBFacade:
             return amenity
         if not amenity_data.get('name'):
             return {'error': 'Amenity name is required'}, 400
-
         amenity.name = amenity_data['name']
         return amenity
 
     def create_place(self, place_data):
-        try:
-            title = place_data.get('tittle')
-            description = data.get('description')
-            price = place_data.get('price')
-            latitude = place_data.get('latitude')
-            longitude = place_data.get('longitude')
-            owner_id = place_data.get('owner_id')
-            amenities_ids = place_data.get('amenities_ids', [])
+        required_fields = ['title', 'description',
+                           'price', 'latitude', 'longitude', 'owner_id']
 
-            if not all([title, description, price, latitude, longitude, owner_id]):
-                return {"error": "All fields are required"}, 400
+        for field in required_fields:
+            if field not in place_data or place_data[field] is None:
+                return {"error": f"{field.capitalize()} is required"}, 400
 
-            if price < 0:
-                raise ValueError('Price must be non-negative')
-            if not -90 <= latitude <= 90:
-                raise ValueError('Latitude must be between -90 and 90')
-            if not -180 <= longitude <= 180:
-                raise ValueError("Longitude must be between -180 and 180")
+        title = place_data['title']
+        description = place_data['description']
+        price = place_data['price']
+        latitude = place_data['latitude']
+        longitude = place_data['longitude']
+        owner_id = place_data['owner_id']
+        amenity_ids = place_data.get('amenities', [])
 
-            owner = User.get_by_id(owner_id)
-            if not owner:
-                return {"error": "Owner not found"}, 400
+        if price < 0:
+            return {"error": "Price must be non-negative"}, 400
+        if not -90 <= latitude <= 90:
+            return {"error": "Latitude must be between -90 and 90"}, 400
+        if not -180 <= longitude <= 180:
+            return {"error": "Longitude must be between -180 and 180"}, 400
 
-            amenities = []
-            for amenity_id in amenity_ids:
-                amenity = Amenity.get_by_id(amenity_id)
-                if amenity:
-                    amenities.append(amenity)
-                else:
-                    return {"error": f"Amenity with ID {amenity_id} not found"}, 400
+        owner = self.user_repo.get(owner_id)
+        if not owner:
+            return {"error": "Owner not found"}, 400
 
-            place = Place(title=title, description=description, price=price,
-                          latitude=latitude, longitude=longitude, owner=owner)
+        amenities = []
+        for amenity_id in amenity_ids:
+            amenity = self.amenity_repo.get(amenity_id)
+            if amenity:
+                amenities.append(amenity)
+            else:
+                return {"error": f"Amenity with ID {amenity_id} not found"}, 400
 
-            for amenity in amenities:
-                place.add_amenity(amenity)
+        place = Place(
+            title=title, description=description, price=price,
+            latitude=latitude, longitude=longitude, owner=owner
+        )
 
-            place.save()
+        for amenity in amenities:
+            place.add_amenity(amenity)
 
-            return {"message": "Place successfully created", "place": place.to_dict()}, 201
+        self.place_repo.add(place)
+        return place, 201
 
     def get_place(self, place_id):
-        '''Retrieves a place by ID, including owner and amenity'''
-        place = Place.get_by_id(place_id)
-        if place:
-            return place
-        else:
-            raise ValueError('place not found')
+        place = self.place_repo.get(place_id)
+        if not place:
+            raise ValueError("Place not found")
+        return place
 
     def get_all_places(self):
-        '''Retrieves all places'''
-        places = Place.get_all()
+        places = self.place_repo.get_all()
         return [place.to_dict() for place in places]
 
     def update_place(self, place_id, place_data):
         place = self.get_place(place_id)
         if not place:
-            raise ValueError('Place not found')
-
+            raise ValueError("Place not found")
         for key, value in place_data.items():
             if hasattr(place, key):
-                if key == 'price':
-                    if value < 0:
-                        raise ValueError('Price must be non-negative')
-                elif key == 'latitude':
-                    if not -90 <= value <= 90:
-                        raise ValueError('latitude must be between -90 and 90')
-                elif key == 'longitude':
-                    if not -180 <= 180:
-                        raise ValueError(
-                            'longitude must be between -180 and 180')
+                if key == 'price' and value < 0:
+                    return {"error": "Price must be non-negative"}, 400
+                elif key == 'latitude' and not -90 <= value <= 90:
+                    return {"error": "Latitude must be between -90 and 90"}, 400
+                elif key == 'longitude' and not -180 <= value <= 180:
+                    return {"error": "Longitude must be between -180 and 180"}, 400
                 setattr(place, key, value)
-
-        return place
+        return place.to_dict()
