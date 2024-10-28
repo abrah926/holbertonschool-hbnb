@@ -55,7 +55,7 @@ class HBnBFacade:
             raise ValueError("Invalid owner ID")
 
         amenities = [self.amenity_repo.get(some_id)
-                     for some_id in place_data['amenity_ids']]
+                     for some_id in place_data['amenities']]
         if None in amenities:
             raise ValueError("Invalid amenity ID in amenities list")
 
@@ -86,3 +86,43 @@ class HBnBFacade:
             place.update(place_data)
             return place
         return None
+
+    def create_review(self, review_data):
+        place = self.place_repo.get(review_data['place_id'])
+
+        if not place:
+            raise ValueError("Invalid place ID")
+
+        user = self.user_repo.get(review_data['user_id'])
+
+        if not user:
+            raise ValueError("Invalid user ID")
+
+        review = Review(
+            text=review_data['text'],
+            rating=review_data['rating'],
+            user=user,
+            place=place
+        )
+        self.review_repo.add(review)
+        return review
+
+    def get_review(self, review_id):
+        # Placeholder for logic to retrieve a review by ID
+        pass
+
+    def get_all_reviews(self):
+        # Placeholder for logic to retrieve all reviews
+        pass
+
+    def get_reviews_by_place(self, place_id):
+        # Placeholder for logic to retrieve all reviews for a specific place
+        pass
+
+    def update_review(self, review_id, review_data):
+        # Placeholder for logic to update a review
+        pass
+
+    def delete_review(self, review_id):
+        # Placeholder for logic to delete a review
+        pass

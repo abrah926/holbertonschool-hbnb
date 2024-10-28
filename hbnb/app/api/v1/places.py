@@ -48,6 +48,7 @@ class PlaceList(Resource):
                 'price': new_place.price,
                 'latitude': new_place.latitude,
                 'longitude': new_place.longitude,
+                'owner_id': new_place.owner.id,
                 'owner_id': new_place.owner.id
             }, 201
         except ValueError as e:
@@ -96,6 +97,7 @@ class PlaceResource(Resource):
                     'name': place.amenity.name
                 } for place.amenity in place.amenities]
         }, 200
+        return place
 
     @api.expect(place_model)
     @api.response(200, 'Place updated successfully')

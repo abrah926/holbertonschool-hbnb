@@ -10,7 +10,7 @@ class Place(BaseModel):
 
     instances = []
 
-    def __init__(self, title, description, price, latitude, longitude, owner):
+    def __init__(self, title, description, price, latitude, longitude, owner, amenities=[]):
         super().__init__()
         self.title = title
         self.description = description
@@ -19,7 +19,7 @@ class Place(BaseModel):
         self.longitude = longitude
         self.owner = owner
         self.reviews = []
-        self.amenities = []
+        self.amenities = amenities
 
     def validate_price(self, price):
         if price < 0:
