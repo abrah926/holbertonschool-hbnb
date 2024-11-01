@@ -20,8 +20,18 @@ class ReviewList(Resource):
     def post(self):
         """Register a new review"""
         review_data = api.payload
-        new_review = facade.create_review(review_data)
-        return {'text': new_review.text, 'rating': new_review.rating, 'place': new_review.place, 'user': new_review.user}, 201
+
+        try:
+            new_review = facade.create_review(review_data)
+            return {
+                'id': new_review.id,
+                'text': new_review.text,
+                'rating': new_review.rating,
+                'user_id': new_review.user.id,
+                'place_id': new_review.place.id
+            }, 201
+        except ValueError as e:
+            return {'error': str(e)}, 400
 
     @api.response(200, 'List of reviews retrieved successfully')
     def get(self):
