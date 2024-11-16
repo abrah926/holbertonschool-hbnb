@@ -108,8 +108,7 @@ class HBnBFacade:
         return review
 
     def get_review(self, review_id):
-        # Placeholder for logic to retrieve a review by ID
-        pass
+        return self.review_repo.get(review_id)
 
     def get_all_reviews(self):
         # Placeholder for logic to retrieve all reviews
@@ -120,8 +119,18 @@ class HBnBFacade:
         pass
 
     def update_review(self, review_id, review_data):
-        # Placeholder for logic to update a review
-        pass
+        review = self.repository.get_review_by_id(review_id)
+        if not review:
+            raise ValueError("Review not found")
+
+        if 'text' in review_data:
+            review.text = review_data['text']
+        if 'rating' in review_data:
+            review.rating = review_data['rating']
+
+        review.validate_all()
+        self.repository.update(review)
+        return review
 
     def delete_review(self, review_id):
         # Placeholder for logic to delete a review
