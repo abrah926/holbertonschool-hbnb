@@ -2,6 +2,8 @@
 
 
 from . import BaseModel
+from . import user
+from . import place
 
 
 class Review(BaseModel):
@@ -19,40 +21,16 @@ class Review(BaseModel):
         if self.rating < 1 or self.rating > 5:
             raise ValueError("Rating must be between 1 to 5")
 
-    def validate_text(self):
-        if not isinstance(self.text, str) or not self.text.strip():
-            raise ValueError("Review text must be a non-empty string.")
+    def validate_user_and_place(self):
+        if not isinstance(self.user, user.User):
+            raise ValueError("User must be a valid User instance")
 
-    def validate_user_id(self):
-        if not isinstance(self.user.id, str) or not self.user.id:
-            raise ValueError("User ID must be valid format.")
+        if not isinstance(self.place, place.Place):
+            raise ValueError("Place must be a valid Place instance")
 
-    def validate_place_id(self):
-        if not isinstance(self.place.id, str) or not self.place.id:
-            raise ValueError("Place ID must be valid format.")
+    def proper_text(self, text):
+        if not isinstance(text, str):
+            raise ValueError("Text must be a string")
 
-    @staticmethod
-    def _is_valid_uuid(value):
-        try:
-            import uuid
-            uuid.UUID(value)
-            return True
-        except ValueError:
-            return False
-
-    def validate_all(self):
-        self.validate_text()
-        self.use_proper_rating_stoopid()
-        self.validate_user_id()
-        self.validate_place_id()
-
-    def to_dict(self):
-        return {
-            'id': self.id,
-            'text': self.text,
-            'rating': self.rating,
-            'user_id': self.user.id,
-            'place_id': self.place.id,
-            'created_at': self.created_at.isoformat(),
-            'updated_at': self.updated_at.isoformat()
-        }
+        if len(text) <= 0:
+            raise ValueError("Text must have some characters")
