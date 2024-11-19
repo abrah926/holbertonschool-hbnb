@@ -17,8 +17,10 @@ class HBnBFacade:
 
     def create_user(self, user_data):
         if 'password' in user_data:
-            user_data['password'] = generate_password_hash(
-                user_data.pop('password'))
+            if 'password' in user_data:
+                password_hash = generate_password_hash(
+                    user_data.pop('password'))
+            user_data['password_hash'] = password_hash
         user = User(**user_data)
         self.user_repo.add(user)
         return user
