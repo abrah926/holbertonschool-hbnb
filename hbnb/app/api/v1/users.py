@@ -14,11 +14,6 @@ user_registration_model = api.model('UserRegistration', {
     'password': fields.String(required=True, description='Password for the user')
 })
 
-login_model = api.model('Login', {
-    'email': fields.String(required=True, description='User email'),
-    'password': fields.String(required=True, description='User password')
-})
-
 
 user_model = api.model('User', {
     'first_name': fields.String(required=True, description='First name of the user'),
@@ -26,29 +21,6 @@ user_model = api.model('User', {
     'email': fields.String(required=True, description='Email of the user'),
     'password': fields.String(required=True, description='Password of the user')
 })
-
-
-@api.route('/login')
-class UserLoginResource(Resource):
-    """Login an existing user"""
-    @api.expect(login_model, validate=True)
-    @api.response(200, 'User successfully logged in')
-    @api.response(401, 'Invalid credentials')
-    @api.response(404, 'User not found')
-    @api.response(400, 'Invalid input data')
-    def post(self):
-        """Authenticate the user and return a JWT token"""
-        data = request.get_json()
-        email = data.get('email')
-        password = data.get('password')
-
-        user = facade.authenticate_user(email, password)
-        if not user:
-            return {'error': 'Invalid credentials'}, 401
-        access_token = create_access_token(identity=user.id)
-        return {
-            'access_token': access_token
-        }, 200
 
 
 @api.route('/')
@@ -84,8 +56,11 @@ class UserList(Resource):
 class UserResource(Resource):
     @api.response(200, 'User details retrieved successfully')
     @api.response(404, 'User not found')
+    @jwt_required()
     def get(self, user_id):
-        """Get user details by ID"""
+        """Get user details by ID, requires JWT authentication"""
+        current_user = get_jwt_identity()
+
         user = facade.get_user(user_id)
         if not user:
             return {'error': 'User not found'}, 404
