@@ -9,6 +9,9 @@ from app.api.v1.places import api as places_ns
 from app.api.v1.reviews import api as reviews_ns
 from config import DevelopmentConfig
 from app.extensions import db, jwt
+from flask_jwt_extended import JWTManager
+
+jwt = JWTManager
 
 
 def create_app():

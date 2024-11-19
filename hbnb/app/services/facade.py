@@ -5,6 +5,7 @@ from app.models.user import User
 from app.models.amenity import Amenity
 from app.models.place import Place
 from app.models.review import Review
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 class HBnBFacade:
@@ -15,9 +16,18 @@ class HBnBFacade:
         self.review_repo = InMemoryRepository()
 
     def create_user(self, user_data):
+        if 'password' in user_data:
+            user_data['password'] = generate_password_hash(
+                user_data.pop('password'))
         user = User(**user_data)
         self.user_repo.add(user)
         return user
+
+    def authenticate_user(self, email, password):
+        user = self.user_repo.get_by_attribute('email', email)
+        if user and check_password_hash(user.password_hash, password):
+            return user
+        return None
 
     def get_user(self, user_id):
         return self.user_repo.get(user_id)
