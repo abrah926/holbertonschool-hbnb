@@ -17,8 +17,8 @@ class User(BaseModel):
         self.is_admin = is_admin
         self.places = []
 
-        self.password_hash = generate_password_hash(
-            password) if password else None
+        if password:
+            self.password_hash = generate_password_hash(password)
 
     def hash_password(self, password):
         """Hashes the password before storing it."""
