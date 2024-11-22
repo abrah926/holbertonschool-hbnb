@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-
+from flask_migrate import Migrate
 from flask import Flask
 from flask_restx import Api
 from app.api.v1.users import api as users_ns
@@ -11,6 +11,10 @@ from app.api.v1.auth import api as auth_ns
 from config import DevelopmentConfig
 from app.extensions import db, jwt, bcrypt
 from flask_jwt_extended import JWTManager
+from flask_sqlalchemy import SQLAlchemy
+
+
+migrate = Migrate()
 
 
 def create_app(config_class=DevelopmentConfig):
@@ -18,6 +22,7 @@ def create_app(config_class=DevelopmentConfig):
     app.config.from_object(config_class)
 
     db.init_app(app)
+    migrate.init_app(app, db)
     jwt.init_app(app)
     bcrypt.init_app(app)
 
