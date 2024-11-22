@@ -36,7 +36,10 @@ class PlaceList(Resource):
     @api.response(400, 'Invalid input data')
     def post(self):
         """Register a new place for the authenticated user"""
-        current_user_id = get_jwt_identity()
+        current_user = get_jwt_identity()  # Should return a dictionary with user details
+        current_user_id = current_user['id'] if isinstance(
+            current_user, dict) else current_user  # Extract user ID
+
         place_data = api.payload
 
         # Set the owner ID as the current user
@@ -57,6 +60,7 @@ class PlaceList(Resource):
             return {'error': str(e)}, 400
 
     @api.response(200, 'List of places retrieved successfully')
+    @api.doc(security=[])  # Explicitly mark this endpoint as public
     def get(self):
         """Retrieve a list of all places"""
         places = facade.get_all_places()
@@ -70,9 +74,9 @@ class PlaceList(Resource):
 
 @api.route('/<place_id>')
 class PlaceResource(Resource):
-    @jwt_required()
     @api.response(200, 'Place details retrieved successfully')
     @api.response(404, 'Place not found')
+    @api.doc(security=[])  # Explicitly mark this endpoint as public
     def get(self, place_id):
         """Get place details by ID"""
         place = facade.get_place(place_id)

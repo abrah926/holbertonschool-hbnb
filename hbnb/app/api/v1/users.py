@@ -56,6 +56,7 @@ class UserList(Resource):
 class UserResource(Resource):
     @api.response(200, 'User details retrieved successfully')
     @api.response(404, 'User not found')
+    @api.response(403, 'Unauthorized to modify this user')
     @jwt_required()
     def get(self, user_id):
         """Get user details by ID, requires JWT authentication"""
@@ -69,12 +70,20 @@ class UserResource(Resource):
     @api.expect(user_model, validate=True)
     @api.response(200, 'User details updated successfully')
     @api.response(404, 'User not found')
+    @api.response(403, 'Unauthorized to modify this user')
     def put(self, user_id):
+        current_user_id = get_jwt_identity()
         user_data = api.payload
         user = facade.get_user(user_id)
 
         if not user:
             return {'error': 'User not found'}, 404
+
+        if user_id != current_user_id:
+            return {'error': 'Unauthorized to modify this user'}, 403
+        user_data = request.get_json()
+        user_data.pop('email', None)  # Prevent updating email
+        user_data.pop('password', None)  # Prevent updating password
 
         user.update(user_data)
         return {
