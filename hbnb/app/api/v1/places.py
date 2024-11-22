@@ -1,7 +1,8 @@
 #!/usr/bin/python3
-
+from flask import request
 from flask_restx import Namespace, Resource, fields
 from app.services import facade
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 api = Namespace('places', description='Place operations')
 
@@ -17,27 +18,29 @@ user_model = api.model('PlaceUser', {
     'email': fields.String(description='Email of the owner')
 })
 
-
 place_model = api.model('Place', {
     'title': fields.String(required=True, description='Title of the place'),
     'description': fields.String(description='Description of the place'),
     'price': fields.Float(required=True, description='Price per night'),
     'latitude': fields.Float(required=True, description='Latitude of the place'),
     'longitude': fields.Float(required=True, description='Longitude of the place'),
-    'owner_id': fields.String(required=True, description='ID of the owner'),
-    'amenities': fields.List(fields.String, required=True, description="List of amenities ID's")
+    'amenities': fields.List(fields.String, required=True, description="List of amenities IDs")
 })
 
 
 @api.route('/')
 class PlaceList(Resource):
+    @jwt_required()
     @api.expect(place_model)
     @api.response(201, 'Place successfully created')
     @api.response(400, 'Invalid input data')
     def post(self):
-        """Register a new place"""
-
+        """Register a new place for the authenticated user"""
+        current_user_id = get_jwt_identity()
         place_data = api.payload
+
+        # Set the owner ID as the current user
+        place_data['owner_id'] = current_user_id
 
         try:
             new_place = facade.create_place(place_data)
@@ -48,7 +51,6 @@ class PlaceList(Resource):
                 'price': new_place.price,
                 'latitude': new_place.latitude,
                 'longitude': new_place.longitude,
-                'owner_id': new_place.owner.id,
                 'owner_id': new_place.owner.id
             }, 201
         except ValueError as e:
@@ -57,7 +59,6 @@ class PlaceList(Resource):
     @api.response(200, 'List of places retrieved successfully')
     def get(self):
         """Retrieve a list of all places"""
-
         places = facade.get_all_places()
         return [{
             'id': place.id,
@@ -69,15 +70,16 @@ class PlaceList(Resource):
 
 @api.route('/<place_id>')
 class PlaceResource(Resource):
+    @jwt_required()
     @api.response(200, 'Place details retrieved successfully')
     @api.response(404, 'Place not found')
     def get(self, place_id):
         """Get place details by ID"""
-
         place = facade.get_place(place_id)
 
         if not place:
             return {'error': 'Place not found'}, 404
+
         return {
             'id': place.id,
             'title': place.title,
@@ -93,21 +95,31 @@ class PlaceResource(Resource):
             },
             'amenities': [
                 {
-                    'id': place.amenity.id,
-                    'name': place.amenity.name
-                } for place.amenity in place.amenities]
+                    'id': amenity.id,
+                    'name': amenity.name
+                } for amenity in place.amenities
+            ]
         }, 200
-        return place
 
+    @jwt_required()
     @api.expect(place_model)
     @api.response(200, 'Place updated successfully')
     @api.response(404, 'Place not found')
     @api.response(400, 'Invalid input data')
+    @api.response(403, 'Unauthorized to modify this place')
     def put(self, place_id):
-        """Update a place's information"""
+        """Update a place's details. Only the owner can update."""
+        current_user_id = get_jwt_identity()
+        place_data = request.get_json()
 
-        place_data = api.payload
-        updated_place = facade.update_place(place_id, place_data)
-        if not updated_place:
+        place = facade.get_place(place_id)
+        if not place:
             return {'error': 'Place not found'}, 404
+
+        # Check if the current user is the owner of the place
+        if place.owner_id != current_user_id:
+            return {'error': 'Unauthorized to modify this place'}, 403
+
+        # Update place information
+        facade.update_place(place_id, place_data)
         return {'message': 'Place updated successfully'}, 200
