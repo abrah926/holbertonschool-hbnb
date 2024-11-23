@@ -1,6 +1,6 @@
+from datetime import datetime
 from app.extensions import db
 import uuid
-from datetime import datetime
 
 
 class BaseModel(db.Model):
@@ -21,7 +21,7 @@ class BaseModel(db.Model):
     def update(self, data):
         """Update the current instance with the provided data."""
         for key, value in data.items():
-            if hasattr(self, key):
+            if key not in {'id', 'created_at', 'updated_at'} and hasattr(self, key):
                 setattr(self, key, value)
         self.save()
 

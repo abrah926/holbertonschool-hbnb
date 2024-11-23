@@ -88,6 +88,12 @@ class SQLAlchemyRepository(Repository):
     def get_by_attribute(self, attr_name, attr_value):
         return self.model.query.filter(getattr(self.model, attr_name) == attr_value).first()
 
+    def get_user_by_email(self, email):
+        """
+        Retrieve a user by their email address.
+        """
+        return self.get_by_attribute('email', email)
+
 
 # Specialized Repositories
 class UserRepository(InMemoryRepository):  # For in-memory usage

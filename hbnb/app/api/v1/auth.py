@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-
+from app.extensions import db, bcrypt
 from flask_restx import Namespace, Resource, fields
 from flask_jwt_extended import create_access_token
 from app.services import facade
