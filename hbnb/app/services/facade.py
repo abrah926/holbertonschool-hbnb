@@ -93,11 +93,9 @@ class HBnBFacade:
         return place
 
     def get_place(self, place_id):
-        # Placeholder for logic to retrieve a place by ID, including associated owner and amenities
         return self.place_repo.get(place_id)
 
     def get_all_places(self):
-        # Placeholder for logic to retrieve all places
         return self.place_repo.get_all()
 
     def update_place(self, place_id, place_data):
@@ -109,18 +107,19 @@ class HBnBFacade:
         return None
 
     def create_review(self, review_data):
-        # Placeholder for logic to create a review, including validation for user_id, place_id, and rating
         user = self.user_repo.get(review_data['user_id'])
         place = self.place_repo.get(review_data['place_id'])
 
-        if not user or not place:
-            raise ValueError("Invalid user or place ID")
+        if not user:
+            raise ValueError("Invalid user ID")
+        if not place:
+            raise ValueError("Invalid place ID")
 
         review = Review(
             text=review_data['text'],
             rating=review_data['rating'],
-            user=user,
-            place=place
+            user_id=user.id,
+            place_id=place.id
         )
         self.review_repo.add(review)
         return review
