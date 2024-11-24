@@ -115,7 +115,8 @@ class ReviewResource(Resource):
     @jwt_required()
     def delete(self, review_id):
         """Delete a review"""
-        current_user_id = get_jwt_identity()
+        current_user = get_jwt_identity()  # JWT identity contains the user ID.
+        current_user_id = current_user.get("id")
         review = facade.get_review(review_id)
         if not review:
             return {'error': 'Review not found'}, 404
