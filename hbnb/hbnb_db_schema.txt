@@ -1,0 +1,121 @@
+
+-- Drop all tables
+SET FOREIGN_KEY_CHECKS = 0;
+
+DROP TABLE IF EXISTS place_amenity;
+DROP TABLE IF EXISTS reviews;
+DROP TABLE IF EXISTS places;
+DROP TABLE IF EXISTS amenities;
+DROP TABLE IF EXISTS users;
+
+SET FOREIGN_KEY_CHECKS = 1;
+
+-- User Table
+CREATE TABLE users (
+    id CHAR(36) PRIMARY KEY,
+    first_name VARCHAR(255) NOT NULL,
+    last_name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    is_admin BOOLEAN DEFAULT FALSE
+);
+
+-- Place Table
+CREATE TABLE places (
+    id CHAR(36) PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    price DECIMAL(10, 2) NOT NULL,
+    latitude FLOAT NOT NULL,
+    longitude FLOAT NOT NULL,
+    owner_id CHAR(36) NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (owner_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- Review Table
+CREATE TABLE reviews (
+    id CHAR(36) PRIMARY KEY,
+    text TEXT NOT NULL,
+    rating INT CHECK (rating BETWEEN 1 AND 5),
+    user_id CHAR(36) NOT NULL,
+    place_id CHAR(36) NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (place_id) REFERENCES places(id) ON DELETE CASCADE,
+    UNIQUE (user_id, place_id)
+);
+
+-- Amenity Table
+CREATE TABLE amenities (
+    id CHAR(36) PRIMARY KEY,
+    name VARCHAR(255) UNIQUE NOT NULL
+);
+
+-- Place_Amenity Table (Many-to-Many relationship)
+CREATE TABLE place_amenity (
+    place_id CHAR(36) NOT NULL,
+    amenity_id CHAR(36) NOT NULL,
+    PRIMARY KEY (place_id, amenity_id),
+    FOREIGN KEY (place_id) REFERENCES places(id) ON DELETE CASCADE,
+    FOREIGN KEY (amenity_id) REFERENCES amenities(id) ON DELETE CASCADE
+);
+
+-- Insert Initial Data
+
+-- Admin User
+INSERT INTO users (id, first_name, last_name, email, password, is_admin) 
+VALUES (
+    '36c9050e-ddd3-4c3b-9731-9f487208bbc1',
+    'Admin',
+    'HBnB',
+    'admin@hbnb.io',
+    '$2b$12$KIXQ5FJVqK7oOVXkq/y7bOx1MsFlZxPmCBO0KpZ2ZyQczgFI9FdiK', -- bcrypt hash for 'admin1234'
+    TRUE
+);
+
+-- Initial Amenities
+INSERT INTO amenities (id, name) VALUES 
+(UUID(), 'WiFi'),
+(UUID(), 'Swimming Pool'),
+(UUID(), 'Air Conditioning');
+
+-- Insert a sample user
+INSERT INTO users (id, first_name, last_name, email, password, is_admin) 
+VALUES (
+    UUID(),
+    'John',
+    'Doe',
+    'john.doe@example.com',
+    '$2b$12$A0tHBoNnNjqD9rtV2Lxgu.OL/r5zIILBqT5aEbLo50GILhrkPhswK', -- bcrypt hash for 'password123'
+    FALSE
+);
+
+-- Insert a sample place
+INSERT INTO places (id, title, description, price, latitude, longitude, owner_id)
+VALUES (
+    UUID(),
+    'Cozy Cottage',
+    'A lovely place to relax.',
+    150.00,
+    40.7128,
+    -74.0060,
+    '36c9050e-ddd3-4c3b-9731-9f487208bbc1'
+);
+
+-- Insert a sample review
+INSERT INTO reviews (id, text, rating, user_id, place_id)
+VALUES (
+    UUID(),
+    'Amazing stay, very comfortable!',
+    5,
+    '36c9050e-ddd3-4c3b-9731-9f487208bbc1',
+    (SELECT id FROM places WHERE title = 'Cozy Cottage')
+);
+
+-- Link amenities to the sample place
+INSERT INTO place_amenity (place_id, amenity_id)
+SELECT (SELECT id FROM places WHERE title = 'Cozy Cottage'), id 
+FROM amenities WHERE name IN ('WiFi', 'Air Conditioning');
