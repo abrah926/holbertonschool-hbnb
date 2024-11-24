@@ -11,16 +11,16 @@ body {
 }
 
 header {
+    display: flex;
+    align-items: center;
     background-color: #333;
     padding: 1rem;
     color: #fff;
-    display: flex;
-    align-items: center;
 }
 
 header img#logo {
-    height: 50px;
     margin-right: 1rem;
+    height: 50px;
 }
 
 nav a {
@@ -30,13 +30,13 @@ nav a {
 }
 
 footer {
-    background-color: #333;
-    color: #fff;
-    text-align: center;
-    padding: 1rem;
     position: fixed;
     bottom: 0;
+    background-color: #333;
+    padding: 1rem;
     width: 100%;
+    color: #fff;
+    text-align: center;
 }
 
 main {
@@ -44,24 +44,24 @@ main {
 }
 
 .place-card {
-    background-color: #fff;
+    display: inline-block;
+    margin: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     border: 1px solid #ddd;
     border-radius: 10px;
-    margin: 20px;
+    background-color: #fff;
     padding: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    display: inline-block;
     width: calc(33% - 40px); /* 3 cards per row with margin */
 }
 
 .details-button {
-    background-color: #007BFF;
-    color: #fff;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 5px;
-    cursor: pointer;
     transition: background-color 0.3s ease;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    background-color: #007BFF;
+    padding: 0.5rem 1rem;
+    color: #fff;
 }
 
 .details-button:hover {
@@ -69,26 +69,26 @@ main {
 }
 
 form {
-    max-width: 600px;
     margin: 0 auto;
-    background-color: #fff;
-    padding: 20px;
     border: 1px solid #ddd;
     border-radius: 10px;
+    background-color: #fff;
+    padding: 20px;
+    max-width: 600px;
 }
 
 input, textarea, select, button {
-    width: 100%;
     margin: 10px 0;
-    padding: 10px;
     border: 1px solid #ddd;
     border-radius: 5px;
+    padding: 10px;
+    width: 100%;
 }
 
 button {
+    cursor: pointer;
     background-color: #007BFF;
     color: #fff;
-    cursor: pointer;
 }
 
 button:hover {
@@ -96,12 +96,12 @@ button:hover {
 }
 
 .review-card {
-    background-color: #fff;
+    margin: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     border: 1px solid #ddd;
     border-radius: 10px;
-    margin: 20px;
+    background-color: #fff;
     padding: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 @media (max-width: 768px) {
