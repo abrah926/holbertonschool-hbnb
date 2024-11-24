@@ -9,6 +9,7 @@
 <body>
     <header>
         <nav>
+            <img src="logo.png" alt="Logo" id="logo">
             <a href="login.html" id="login-link">Login</a>
         </nav>
     </header>
@@ -16,13 +17,19 @@
         <section id="filter">
             <label for="price-filter">Max Price:</label>
             <select id="price-filter">
-                <!-- Options will be populated dynamically -->
+                <option value="">Any</option>
+                <option value="50">$50</option>
+                <option value="100">$100</option>
+                <option value="200">$200</option>
             </select>
         </section>
         <section id="places-list">
-            <!-- List of places will be populated dynamically -->
+            <!-- List of places will be dynamically populated here -->
         </section>
     </main>
+    <footer>
+        <p>All rights reserved © 2024</p>
+    </footer>
     <script src="scripts.js"></script>
 </body>
 </html>
