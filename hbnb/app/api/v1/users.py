@@ -71,8 +71,15 @@ class UserResource(Resource):
     @api.response(200, 'User details updated successfully')
     @api.response(404, 'User not found')
     @api.response(403, 'Unauthorized to modify this user')
+    @api.response(400, 'Invalid input data')
+    @jwt_required()
     def put(self, user_id):
-        current_user_id = get_jwt_identity()
+        current_user = get_jwt_identity()
+        current_user_id = current_user.get("id")
+
+        if user_id != current_user_id:
+            return {'error': 'Unauthorized to modify this user'}, 403
+
         user_data = api.payload
         user = facade.get_user(user_id)
 
