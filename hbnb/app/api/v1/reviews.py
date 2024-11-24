@@ -1,6 +1,8 @@
 from flask_restx import Namespace, Resource, fields
 from app.services import facade
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from app.extensions import db
+import logging
 
 api = Namespace('reviews', description='Review operations')
 
@@ -64,35 +66,53 @@ class ReviewResource(Resource):
             'place_id': review.place.id
         }, 200
 
+    logging.basicConfig(level=logging.DEBUG)
+
     @api.expect(review_model)
     @api.response(200, 'Review updated successfully')
     @api.response(404, 'Review not found')
     @api.response(400, 'Invalid input data')
     @jwt_required()
     def put(self, review_id):
-        """Update a review's information"""
-        current_user_id = get_jwt_identity()
-        review_data = api.payload
+        """Update a review by ID."""
+        current_user = get_jwt_identity()  # JWT identity contains the user ID.
+        current_user_id = current_user.get("id")
 
-        if 'place_id' not in review_data or 'user_id' not in review_data:
-            return {'error': 'Invalid input data'}, 400
-
-        if review.user_id != current_user_id:
-            return {'error': 'Unauthorized to modify this review'}, 403
-
+        # Fetch the review from the database
         review = facade.get_review(review_id)
         if not review:
             return {'error': 'Review not found'}, 404
 
-        updated_review = facade.update_review(review_id, review_data)
+        # Log IDs for debugging
+        logging.debug(f"Review User ID: {review.user_id}")
+        logging.debug(f"Current User ID: {current_user_id}")
+
+        # Check if the current user owns the review
+        if review.user_id != current_user_id:
+            return {'error': 'Unauthorized to modify this review'}, 403
+
+        # Update review fields
+        review_data = api.payload
+        if 'text' in review_data:
+            review.text = review_data['text']
+        if 'rating' in review_data:
+            review.rating = review_data['rating']
+
+        # Save the changes to the database
+        db.session.commit()
+
         return {
-            'text': updated_review.text,
-            'rating': updated_review.rating
+            'id': review.id,
+            'text': review.text,
+            'rating': review.rating,
+            'user_id': review.user_id,
+            'place_id': review.place_id
         }, 200
 
     @api.response(200, 'Review deleted successfully')
     @api.response(404, 'Review not found')
     @api.response(403, 'Unauthorized to delete this review')
+    @jwt_required()
     def delete(self, review_id):
         """Delete a review"""
         current_user_id = get_jwt_identity()
