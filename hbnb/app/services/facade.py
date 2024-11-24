@@ -99,12 +99,28 @@ class HBnBFacade:
         return self.place_repo.get_all()
 
     def update_place(self, place_id, place_data):
-        # Placeholder for logic to update a place
         place = self.get_place(place_id)
-        if place:
-            place.update(place_data)
-            return place
-        return None
+        if not place:
+            raise ValueError("Place not found")
+
+        # Handle amenities separately
+        if "amenities" in place_data:
+            amenity_ids = place_data.get("amenities", [])
+        # Fetch Amenity instances from the IDs
+            amenities = Amenity.query.filter(Amenity.id.in_(amenity_ids)).all()
+
+            if len(amenities) != len(amenity_ids):
+                raise ValueError("One or more amenities not found")
+
+            place.amenities = amenities  # Assign Amenity instances to the relationship
+
+        # Update other fields in the Place object
+        for key, value in place_data.items():
+            if hasattr(place, key) and key != "amenities":
+                setattr(place, key, value)
+
+        db.session.commit()
+        return place
 
     def create_review(self, review_data):
         user = self.user_repo.get(review_data['user_id'])

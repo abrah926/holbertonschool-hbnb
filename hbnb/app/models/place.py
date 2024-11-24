@@ -72,3 +72,9 @@ class Place(db.Model):
         """Add an amenity to the place."""
         if amenity not in self.amenities:
             self.amenities.append(amenity)
+
+    def update(self, data):
+        """Update the Place object with the provided data."""
+        for key, value in data.items():
+            if hasattr(self, key):
+                setattr(self, key, value)
