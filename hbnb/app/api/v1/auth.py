@@ -34,8 +34,18 @@ class Login(Resource):
             access_token,
             httponly=True,
             secure=False,   # Use True in production with HTTPS
-            samesite='None'  # Allow cross-origin requests
+            samesite='None',  # Allow cross-origin requests
+            domain='127.0.0.1:5000',
         )
         response.headers['Access-Control-Allow-Origin'] = 'http://127.0.0.1:5500'
         response.headers['Access-Control-Allow-Credentials'] = 'true'
-        return response
+        # DEBUG: Log all response headers to console
+        print("Response Headers:", dict(response.headers))
+
+        # Add headers to the response body for debugging purposes
+        response_body = {
+            'message': 'Login successful',
+            # Add headers to response body
+            'headers': {k: v for k, v in response.headers.items()}
+        }
+        return jsonify(response_body)
