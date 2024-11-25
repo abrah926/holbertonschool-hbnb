@@ -1,115 +1,21 @@
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: Arial, sans-serif;
-}
-
-body {
-    background-color: #f4f4f4;
-    color: #333;
-}
-
-header {
-    display: flex;
-    align-items: center;
-    background-color: #333;
-    padding: 1rem;
-    color: #fff;
-}
-
-header img#logo {
-    margin-right: 1rem;
-    height: 50px;
-}
-
-nav a {
-    margin-left: 1rem;
-    color: #fff;
-    text-decoration: none;
-}
-
-footer {
-    position: fixed;
-    bottom: 0;
-    background-color: #333;
-    padding: 1rem;
-    width: 100%;
-    color: #fff;
-    text-align: center;
-}
-
-main {
-    padding: 2rem;
-}
-
-.place-card {
-    display: inline-block;
-    margin: 20px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    background-color: #fff;
-    padding: 10px;
-    width: calc(33% - 40px); /* 3 cards per row with margin */
-}
-
-.details-button {
-    transition: background-color 0.3s ease;
-    cursor: pointer;
-    border: none;
-    border-radius: 5px;
-    background-color: #007BFF;
-    padding: 0.5rem 1rem;
-    color: #fff;
-}
-
-.details-button:hover {
-    background-color: #0056b3;
-}
-
 form {
-    margin: 0 auto;
+    margin: 50px auto;
+    padding: 20px;
     border: 1px solid #ddd;
     border-radius: 10px;
     background-color: #fff;
-    padding: 20px;
-    max-width: 600px;
-}
-
-input, textarea, select, button {
-    margin: 10px 0;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 10px;
-    width: 100%;
+    max-width: 400px;
 }
 
 button {
-    cursor: pointer;
     background-color: #007BFF;
-    color: #fff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
 }
 
 button:hover {
     background-color: #0056b3;
-}
-
-.review-card {
-    margin: 20px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    background-color: #fff;
-    padding: 10px;
-}
-
-@media (max-width: 768px) {
-    .place-card {
-        width: calc(100% - 40px); /* 1 card per row */
-    }
-
-    nav a {
-        margin-left: 0.5rem;
-    }
 }

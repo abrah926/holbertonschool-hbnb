@@ -12,7 +12,7 @@ from config import DevelopmentConfig
 from app.extensions import db, jwt, bcrypt
 from flask_jwt_extended import JWTManager
 from flask_sqlalchemy import SQLAlchemy
-
+from flask_cors import CORS
 
 migrate = Migrate()
 
@@ -25,6 +25,10 @@ def create_app(config_class=DevelopmentConfig):
     migrate.init_app(app, db)
     jwt.init_app(app)
     bcrypt.init_app(app)
+    from flask_cors import CORS
+
+    CORS(app, resources={
+         r"/api/*": {"origins": "http://127.0.0.1:5500"}}, supports_credentials=True)
 
     # Define authorization scheme
     authorizations = {
