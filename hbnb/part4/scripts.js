@@ -30,6 +30,10 @@ async function loginUser(email, password) {
             const data = await response.json();
             console.log('Login successful:', data);
 
+            // Store the token in a cookie manually (for debugging or backup)
+            document.cookie = `token=${data.access_token}; path=/; SameSite=None; Secure`;
+
+
             // Redirect to the main page
             window.location.href = 'index.html';
         } else {

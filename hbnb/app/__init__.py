@@ -25,7 +25,6 @@ def create_app(config_class=DevelopmentConfig):
     migrate.init_app(app, db)
     jwt.init_app(app)
     bcrypt.init_app(app)
-    from flask_cors import CORS
 
     CORS(app, resources={
          r"/api/*": {"origins": "http://127.0.0.1:5500"}}, supports_credentials=True)
