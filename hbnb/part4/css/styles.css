@@ -1,3 +1,4 @@
+/* General Reset */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -5,11 +6,14 @@
     font-family: Arial, sans-serif;
 }
 
+/* Body Styling */
 body {
+    margin: 0;
     background-color: #f4f4f4;
     color: #333;
 }
 
+/* Header Styling */
 header {
     display: flex;
     align-items: center;
@@ -18,17 +22,32 @@ header {
     color: #fff;
 }
 
-header img#logo {
+header img.logo {
     margin-right: 1rem;
     height: 50px;
 }
 
+/* Navigation Styling */
+nav {
+    display: flex;
+    justify-content: space-around;
+    background-color: #444;
+    padding: 0.5rem 1rem;
+}
+
 nav a {
-    margin-left: 1rem;
+    transition: background-color 0.3s ease;
+    border-radius: 5px;
+    padding: 0.5rem 1rem;
     color: #fff;
     text-decoration: none;
 }
 
+nav a:hover {
+    background-color: #555;
+}
+
+/* Footer Styling */
 footer {
     position: fixed;
     bottom: 0;
@@ -39,91 +58,155 @@ footer {
     text-align: center;
 }
 
-main {
+/* Main Container */
+main.container {
+    margin-bottom: 4rem;
     padding: 2rem;
 }
 
+/* Place Card Styling */
 .place-card {
     display: inline-block;
-    margin: 20px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    margin: 1rem;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     border: 1px solid #ddd;
     border-radius: 10px;
     background-color: #fff;
-    padding: 10px;
-    width: calc(33% - 40px); /* 3 cards per row with margin */
+    padding: 1rem;
+    width: calc(33.33% - 2rem);
+    text-align: center;
+}
+
+.place-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+}
+
+.place-card h2 {
+    margin: 0.5rem 0;
+    font-size: 1.5rem;
+}
+
+.place-card .place-price {
+    margin-bottom: 1rem;
+    color: #007BFF;
+    font-weight: bold;
 }
 
 .details-button {
+    display: inline-block;
     transition: background-color 0.3s ease;
-    cursor: pointer;
     border: none;
     border-radius: 5px;
     background-color: #007BFF;
     padding: 0.5rem 1rem;
     color: #fff;
+    text-decoration: none;
 }
 
 .details-button:hover {
     background-color: #0056b3;
 }
 
-form {
-    margin: 0 auto;
+/* Filter Section */
+.filter-section {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.filter-section label {
+    margin-right: 1rem;
+    font-weight: bold;
+}
+
+.filter-section select {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 0.5rem;
+}
+
+/* Review Form */
+form.review-form {
+    margin: 2rem auto;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     border: 1px solid #ddd;
     border-radius: 10px;
     background-color: #fff;
-    padding: 20px;
+    padding: 2rem;
     max-width: 600px;
 }
 
-input, textarea, select, button {
-    margin: 10px 0;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 10px;
-    width: 100%;
+form label {
+    display: block;
+    margin: 1rem 0 0.5rem;
+    font-weight: bold;
 }
 
-button {
+form textarea, form select, form button {
+    margin-bottom: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 0.5rem;
+    width: 100%;
+    font-size: 1rem;
+}
+
+form button {
+    transition: background-color 0.3s ease;
     cursor: pointer;
     background-color: #007BFF;
     color: #fff;
 }
 
-button:hover {
+form button:hover {
     background-color: #0056b3;
 }
 
+/* Review Cards */
 .review-card {
-    margin: 20px;
+    margin-bottom: 1rem;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     border: 1px solid #ddd;
     border-radius: 10px;
     background-color: #fff;
-    padding: 10px;
+    padding: 1rem;
 }
 
+.review-card p {
+    margin: 0.5rem 0;
+}
+
+.review-card .fa-star {
+    color: #FFD700;
+}
+
+.review-card .fa-star.checked {
+    color: #FFC107;
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
     .place-card {
-        width: calc(100% - 40px); /* 1 card per row */
+        width: calc(50% - 2rem);
+    }
+
+    nav {
+        flex-direction: column;
+        align-items: center;
     }
 
     nav a {
-        margin-left: 0.5rem;
+        margin: 0.5rem 0;
     }
 }
-#place-details {
-    margin: 20px;
-}
 
-.review-card {
-    margin-bottom: 10px;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    padding: 10px;
-}
+@media (max-width: 480px) {
+    .place-card {
+        width: calc(100% - 2rem);
+    }
 
-#add-review form {
-    margin-top: 20px;
+    header, footer {
+        text-align: center;
+    }
 }
