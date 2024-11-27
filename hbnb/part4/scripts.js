@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (priceFilter) {
         priceFilter.addEventListener('change', (event) => {
             const selectedPrice = event.target.value;
+            console.log('Selected Price Filter:', selectedPrice);
             fetchPlaces(selectedPrice);
         });
     }
@@ -57,20 +58,22 @@ async function fetchPlaces(maxPrice = '') {
     try {
         const response = await fetch(url, {
             method: 'GET',
-            credentials: 'include',
+            credentials: 'include', // Include cookies for authentication
         });
 
         if (!response.ok) {
             throw new Error('Failed to fetch places. Check your authentication.');
         }
 
-        const places = await response.json();
-        displayPlaces(places);
+        const places = await response.json(); // Parse JSON response
+        console.log('Places fetched:', places); // Debug the response structure
+        displayPlaces(places); // Pass data to display function
     } catch (error) {
         console.error('Error fetching places:', error);
         alert('Unable to fetch places. Please check your authentication.');
     }
 }
+
 
 function submitReview() {
     const reviewText = document.getElementById('review-text').value;
@@ -153,3 +156,60 @@ function displayPlaces(places) {
 function viewDetails(placeId) {
     window.location.href = `place.html?place_id=${placeId}`;
 }
+
+function getPlaceIdFromURL() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('place_id');
+}
+
+const placeId = getPlaceIdFromURL();
+console.log('Extracted Place ID:', placeId);
+
+async function fetchPlaceDetails() {
+    const placeId = getPlaceIdFromURL(); // Extract the place_id
+
+    if (!placeId) {
+        alert('Invalid place ID.');
+        return;
+    }
+
+    try {
+        const response = await fetch(`http://127.0.0.1:5000/api/v1/places/${placeId}`, {
+            method: 'GET',
+            credentials: 'include', // Include cookies for authentication
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch place details. Please check your authentication.');
+        }
+
+        const place = await response.json();
+        displayPlaceDetails(place); // Populate place details
+    } catch (error) {
+        console.error('Error fetching place details:', error);
+        alert('Unable to load place details. Please try again later.');
+    }
+}
+
+function displayPlaceDetails(place) {
+    const placeDetails = document.getElementById('place-details');
+    placeDetails.innerHTML = `
+        <h1>${place.title}</h1>
+        <p>${place.description || 'No description available.'}</p>
+        <p>Price: $${place.price || 'N/A'}</p>
+        <h3>Amenities</h3>
+        <ul>
+            ${place.amenities && place.amenities.length > 0
+                ? place.amenities.map(amenity => `<li>${amenity}</li>`).join('')
+                : '<li>No amenities available.</li>'}
+        </ul>
+    `;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const token = getCookie('token'); // Check if the user is authenticated
+
+    if (token) {
+        fetchPlaceDetails(); // Fetch place details only if authenticated
+    }
+});

@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+
 from flask import request
 from flask_restx import Namespace, Resource, fields
 from flask_jwt_extended import jwt_required, get_jwt_identity
@@ -30,7 +30,7 @@ review_model = api.model('PlaceReview', {
     'user_id': fields.String(description='ID of the user')
 })
 
-# Define the place model for input validation and documentation
+
 place_model = api.model('Place', {
     'title': fields.String(required=True, description='Title of the place'),
     'description': fields.String(description='Description of the place'),
@@ -51,7 +51,7 @@ class PlaceList(Resource):
     @api.response(400, 'Invalid input data')
     def post(self):
         """Register a new place"""
-        # Placeholder for the logic to register a new place
+
         place_data = api.payload
 
         try:
@@ -71,7 +71,7 @@ class PlaceList(Resource):
     @api.response(200, 'List of places retrieved successfully')
     def get(self):
         """Retrieve a list of all places"""
-        # Placeholder for logic to return a list of all places
+
         places = facade.get_all_places()
         return [{
             'id': place.id,
@@ -88,7 +88,7 @@ class PlaceResource(Resource):
     @api.response(404, 'Place not found')
     def get(self, place_id):
         """Get place details by ID"""
-        # Placeholder for the logic to retrieve a place by ID, including associated owner and amenities
+
         place = facade.get_place(place_id)
 
         if not place:

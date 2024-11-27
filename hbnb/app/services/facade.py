@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+
 from app.persistence.repository import SQLAlchemyRepository
 from app.models.user import User
 from app.models.amenity import Amenity
@@ -44,21 +44,21 @@ class HBnBFacade:
         return self.user_repo.get_all()
 
     def create_amenity(self, amenity_data):
-        # Placeholder for logic to create an amenity
+
         amenity = Amenity(**amenity_data)
         self.amenity_repo.add(amenity)
         return amenity
 
     def get_amenity(self, amenity_id):
-        # Placeholder for logic to retrieve an amenity by ID
+
         return self.amenity_repo.get(amenity_id)
 
     def get_all_amenities(self):
-        # Placeholder for logic to retrieve all amenities
+
         return self.amenity_repo.get_all()
 
     def update_amenity(self, amenity_id, amenity_data):
-        # Placeholder for logic to update an amenity
+
         amenity = self.get_amenity(amenity_id)
         if amenity:
             amenity.update(amenity_data)
@@ -66,7 +66,7 @@ class HBnBFacade:
         return None
 
     def create_place(self, place_data):
-        # Placeholder for logic to create a place, including validation for price, latitude, and longitude
+
         owner = self.user_repo.get(place_data['owner_id'])
         if not owner:
             raise ValueError("Invalid owner ID")
@@ -86,7 +86,6 @@ class HBnBFacade:
         )
         place.amenities = amenities
 
-        # Save the Place to the database
         db.session.add(place)
         db.session.commit()
 
@@ -141,19 +140,19 @@ class HBnBFacade:
         return review
 
     def get_review(self, review_id):
-        # Placeholder for logic to retrieve a review by ID
+
         return self.review_repo.get(review_id)
 
     def get_all_reviews(self):
-        # Placeholder for logic to retrieve all reviews
+
         return self.review_repo.get_all()
 
     def get_reviews_by_place(self, place_id):
-        # Placeholder for logic to retrieve all reviews for a specific place
+
         return [review for review in self.get_all_reviews() if review.place.id == place_id]
 
     def update_review(self, review_id, review_data):
-        # Placeholder for logic to update a review
+
         review = self.get_review(review_id)
         if review:
             review.update(review_data)
@@ -161,7 +160,7 @@ class HBnBFacade:
         return None
 
     def delete_review(self, review_id):
-        # Placeholder for logic to delete a review
+
         review = self.get_review(review_id)
         if review:
             self.review_repo.delete(review_id)
